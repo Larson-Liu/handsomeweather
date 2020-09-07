@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<litepal>
+    <dbname value="handsome_weather" />
+    <version value="1" />
+    <!--映射模型列表-->
+    <list>
+        <mapping class="com.xiaoshuai.handsomeweather.db.Province" />
+        <mapping class="com.xiaoshuai.handsomeweather.db.City" />
+        <mapping class="com.xiaoshuai.handsomeweather.db.County" />
+    </list>
+</litepal>
