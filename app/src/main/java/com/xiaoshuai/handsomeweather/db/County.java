@@ -4,7 +4,7 @@ import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
 /**
- * 县或区
+ * 县
  */
 public class County extends LitePalSupport {
     @Column(unique = true)
