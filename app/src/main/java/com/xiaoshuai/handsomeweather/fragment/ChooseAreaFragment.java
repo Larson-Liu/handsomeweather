@@ -1,5 +1,6 @@
 package com.xiaoshuai.handsomeweather.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +19,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.xiaoshuai.handsomeweather.R;
+import com.xiaoshuai.handsomeweather.WeatherActivity;
 import com.xiaoshuai.handsomeweather.db.City;
 import com.xiaoshuai.handsomeweather.db.County;
 import com.xiaoshuai.handsomeweather.db.Province;
+import com.xiaoshuai.handsomeweather.gson.Weather;
 import com.xiaoshuai.handsomeweather.util.JSONHandler;
 import com.xiaoshuai.handsomeweather.util.OkHttpUtil;
 
@@ -51,6 +54,7 @@ public class ChooseAreaFragment extends Fragment {
     private List<Province> provinces;
     private City selectedCity;
     private List<City> cities;
+    private List<County> counties;
 
     /*定义碎片布局中的控件对象*/
     private Button backButton;
@@ -103,6 +107,13 @@ public class ChooseAreaFragment extends Fragment {
                } else if (LEVEL_CITY==currentLevel) {
                    selectedCity=cities.get(i);
                    queryCounty();
+               } else if (LEVEL_COUNTY==currentLevel) {
+                   /*点击县进入对应城市天气界面，并传入天气id*/
+                   String weatherId=counties.get(i).getWeatherId();
+                   Intent intent=new Intent(getContext(), WeatherActivity.class);
+                   intent.putExtra("weather_id",weatherId);
+                   startActivity(intent);
+                   getActivity().finish();
                }
             }
         });
@@ -167,7 +178,7 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCounty() {
         title.setText("县  区");
         backButton.setVisibility(View.VISIBLE);
-        List<County> counties=LitePal.where("cityId=?",String.valueOf(selectedCity.getCityCode())).find(County.class);
+        counties=LitePal.where("cityId=?",String.valueOf(selectedCity.getCityCode())).find(County.class);
         if (counties!=null && counties.size()>0) {
             dataList.clear();
             for (County c:
@@ -253,6 +264,9 @@ public class ChooseAreaFragment extends Fragment {
         });
     }
 
+    /**
+     * 显示滚动条
+     */
     private void showProgressBar() {
         if (progressBar.getVisibility()==View.GONE) {
             progressBar.setVisibility(View.VISIBLE);
@@ -261,6 +275,10 @@ public class ChooseAreaFragment extends Fragment {
         getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
+
+    /**
+     * 关闭滚动条
+     */
     private void closeProgressBar() {
         if (progressBar.getVisibility()==View.VISIBLE) {
             progressBar.setVisibility(View.GONE);

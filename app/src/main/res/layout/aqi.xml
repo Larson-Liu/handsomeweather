@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="15dp">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/aqi_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/aqi_img"
+            android:layout_margin="10dp" />
+        <TextView
+            android:id="@+id/air_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="空气"
+            android:textSize="12sp"
+            android:textColor="#FFFFFF"
+            android:layout_toRightOf="@id/aqi_image"
+            android:layout_centerVertical="true" />
+        <TextView
+            android:id="@+id/aqi_qlty_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#FFFFFF"
+            android:layout_toRightOf="@id/air_text"
+            android:layout_centerVertical="true" />
+        <TextView
+            android:id="@+id/aqi_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#FFFFFF"
+            android:layout_toRightOf="@id/aqi_qlty_text"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        >
+
+        <ImageView
+            android:id="@+id/pm25_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/pm25_img"
+            android:layout_margin="10dp" />
+        <TextView
+            android:id="@+id/pm25_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PM2.5指数"
+            android:textSize="12sp"
+            android:textColor="#FFFFFF"
+            android:layout_toRightOf="@id/pm25_image"
+            android:layout_centerVertical="true" />
+        <TextView
+            android:id="@+id/aqi_pm25_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#FFFFFF"
+            android:layout_toRightOf="@id/pm25_name_text"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp" />
+    </RelativeLayout>
+</LinearLayout>

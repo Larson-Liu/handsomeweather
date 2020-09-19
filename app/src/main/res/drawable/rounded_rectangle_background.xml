@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--设置圆角背景-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--设置背景颜色-->
+    <solid android:color="#8000" />
+    <!--设置边框颜色与宽度-->
+    <stroke
+        android:color="#DCD8D8"
+        android:width="1dp" />
+    <!--设置圆角半径-->
+    <corners
+        android:radius="5dp" />
+
+</shape>

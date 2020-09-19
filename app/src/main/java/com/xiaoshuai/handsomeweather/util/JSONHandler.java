@@ -2,9 +2,11 @@ package com.xiaoshuai.handsomeweather.util;
 
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
 import com.xiaoshuai.handsomeweather.db.City;
 import com.xiaoshuai.handsomeweather.db.County;
 import com.xiaoshuai.handsomeweather.db.Province;
+import com.xiaoshuai.handsomeweather.gson.Weather;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -89,5 +91,29 @@ public class JSONHandler {
             }
         }
         return false;
+    }
+
+    /**
+     * 用Gson将服务器返回的天气数据解析成Weather对象
+     * @param weatherData
+     * @return Weather实例
+     */
+    public static Weather handleWeatherData(String weatherData) {
+        if (!TextUtils.isEmpty(weatherData)) {
+            try {
+                //单个Json对象
+                JSONObject jsonObject=new JSONObject(weatherData);
+                //根据"HeWeather"得到JSONArray
+                JSONArray jsonArray=jsonObject.getJSONArray("HeWeather");
+                //第一个jsonObject即为城市天气数据对象，将此转化成json字符串
+                String weather_data=jsonArray.get(0).toString();
+                //将天气json字符串数据解析成Weather对象
+                Weather weather=new Gson().fromJson(weather_data,Weather.class);
+                return weather;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 }
