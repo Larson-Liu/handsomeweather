@@ -4,15 +4,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.xiaoshuai.handsomeweather.gson.Forecast;
 import com.xiaoshuai.handsomeweather.gson.Weather;
@@ -30,6 +34,7 @@ import okhttp3.Response;
 
 public class WeatherActivity extends AppCompatActivity {
 
+    private ImageView backgroundImage;
     private ScrollView weatherView;
     private TextView cityName;
     private TextView tmp;
@@ -55,7 +60,16 @@ public class WeatherActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        /*安卓5.0及其以上的系统支持的功能(将界面背景图与系统状态栏融合)*/
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            //将活动布局显示在系统状态栏的上面
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            //设置系统状态栏为透明状态
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         setContentView(R.layout.activity_weather);
+        backgroundImage = (ImageView)findViewById(R.id.weather_background);
         weatherView = (ScrollView)findViewById(R.id.weather_data_view);
         cityName = (TextView)findViewById(R.id.city_name);
         tmp = (TextView)findViewById(R.id.tmp_text);
@@ -85,11 +99,21 @@ public class WeatherActivity extends AppCompatActivity {
             //隐藏空数据的天气界面
             weatherView.setVisibility(View.GONE);
             requestWeatherData(weatherId);
+            //从服务器中加载图片
+            requestImage();
         } else {
             /*从缓存中直接获取城市天气数据，并显示到天气界面中*/
             String weatherData = getIntent().getStringExtra("weather_data");
             Weather weather = new Gson().fromJson(weatherData,Weather.class);
             showWeatherData(weather);
+            /*通过缓存中是否存在背景图Url来判断是否从服务器中获取并加载背景图*/
+            SharedPreferences preferences = getSharedPreferences("weather_data",MODE_PRIVATE);
+            String imageUrl = preferences.getString("image_url",null);
+            if (!TextUtils.isEmpty(imageUrl)) {
+                Glide.with(this).load(imageUrl).into(backgroundImage);
+            } else {
+                requestImage();
+            }
         }
     }
 
@@ -178,5 +202,41 @@ public class WeatherActivity extends AppCompatActivity {
         cw_text.setText(weather.suggestion.cw.txt);
         //显示天气界面
         weatherView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * 从服务器中获取图片，添加到缓存中，再加载出来
+     */
+    private void requestImage() {
+        String address="http://guolin.tech/api/bing_pic";
+        OkHttpUtil.sendOkHttpRequest(address, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //如果从服务器中加载图片失败，则默认加载drawable中的背景图
+                        Glide.with(WeatherActivity.this).load(R.drawable.weather_background).into(backgroundImage);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                final String imageUrl = response.body().string();
+                /*将获取到的图片Url存储到缓存中*/
+                SharedPreferences.Editor editor = getSharedPreferences("weather_data",MODE_PRIVATE).edit();
+                editor.putString("image_url",imageUrl);
+                editor.apply();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //加载图片
+                        Glide.with(WeatherActivity.this).load(imageUrl).into(backgroundImage);
+                    }
+                });
+            }
+        });
     }
 }
