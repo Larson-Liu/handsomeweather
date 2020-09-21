@@ -1,6 +1,7 @@
 package com.xiaoshuai.handsomeweather;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -33,6 +34,11 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class WeatherActivity extends AppCompatActivity {
+
+    //下拉刷新
+    public SwipeRefreshLayout swipeRefresh;
+    //天气id
+    private String currentWeatherId;
 
     private ImageView backgroundImage;
     private ScrollView weatherView;
@@ -70,6 +76,15 @@ public class WeatherActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
         setContentView(R.layout.activity_weather);
+        swipeRefresh = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh);
+        //设置组合颜色，手指下滑显示第一个颜色，刷新过程中连续切换后面的颜色
+        swipeRefresh.setColorSchemeColors(Color.TRANSPARENT,Color.DKGRAY,Color.BLACK);
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                requestWeatherData(currentWeatherId);
+            }
+        });
         backgroundImage = (ImageView)findViewById(R.id.weather_background);
         weatherView = (ScrollView)findViewById(R.id.weather_data_view);
         cityName = (TextView)findViewById(R.id.city_name);
@@ -97,6 +112,7 @@ public class WeatherActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String weatherId = intent.getStringExtra("weather_id");
         if (!TextUtils.isEmpty(weatherId)) {
+            currentWeatherId = weatherId;
             /*从服务器中获取被选中的城市天气数据，并将天气数据存放到缓存中*/
             //隐藏空数据的天气界面
             weatherView.setVisibility(View.GONE);
@@ -107,6 +123,7 @@ public class WeatherActivity extends AppCompatActivity {
             /*从缓存中直接获取城市天气数据，并显示到天气界面中*/
             String weatherData = getIntent().getStringExtra("weather_data");
             Weather weather = new Gson().fromJson(weatherData,Weather.class);
+            currentWeatherId = weather.basic.weatherId;
             showWeatherData(weather);
             /*通过缓存中是否存在背景图Url来判断是否从服务器中获取并加载背景图*/
             SharedPreferences preferences = getSharedPreferences("weather_data",MODE_PRIVATE);
@@ -129,7 +146,14 @@ public class WeatherActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
-                Toast.makeText(WeatherActivity.this,"网络异常，加载失败",Toast.LENGTH_SHORT).show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(WeatherActivity.this,"网络异常，加载失败",Toast.LENGTH_SHORT).show();
+                        //取消下拉刷新
+                        swipeRefresh.setRefreshing(false);
+                    }
+                });
             }
 
             @Override
@@ -149,6 +173,8 @@ public class WeatherActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(WeatherActivity.this,"获取天气信息失败",Toast.LENGTH_SHORT).show();
                         }
+                        //取消下拉刷新
+                        swipeRefresh.setRefreshing(false);
                     }
                 });
             }
