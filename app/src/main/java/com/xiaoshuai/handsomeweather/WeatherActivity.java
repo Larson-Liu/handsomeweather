@@ -37,6 +37,7 @@ public class WeatherActivity extends AppCompatActivity {
     private ImageView backgroundImage;
     private ScrollView weatherView;
     private TextView cityName;
+    private TextView updateTime;
     private TextView tmp;
     private TextView condTxt;
     private TextView aqiQlty;
@@ -72,6 +73,7 @@ public class WeatherActivity extends AppCompatActivity {
         backgroundImage = (ImageView)findViewById(R.id.weather_background);
         weatherView = (ScrollView)findViewById(R.id.weather_data_view);
         cityName = (TextView)findViewById(R.id.city_name);
+        updateTime = (TextView)findViewById(R.id.update_date_text);
         tmp = (TextView)findViewById(R.id.tmp_text);
         condTxt = (TextView)findViewById(R.id.cond_txt);
         aqiQlty = (TextView)findViewById(R.id.aqi_qlty_text);
@@ -121,7 +123,7 @@ public class WeatherActivity extends AppCompatActivity {
      * 根据天气id从服务器请求天气数据
      * @param weatherId
      */
-    private void requestWeatherData(final String weatherId) {
+    public void requestWeatherData(final String weatherId) {
         String address = "http://guolin.tech/api/weather?cityid="+weatherId+"&key=060736f36c3e4dc2a55abe64b57619cd";
         OkHttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
@@ -157,9 +159,11 @@ public class WeatherActivity extends AppCompatActivity {
      * 将缓存中获取的天气数据显示到界面
      * @param weather
      */
-    private void showWeatherData(Weather weather){
+    private void showWeatherData(@NotNull Weather weather){
         //显示当前城市名
         cityName.setText(weather.basic.location);
+        //显示数据更新时间
+        updateTime.setText(weather.basic.update.updateTime);
         //显示天气
         tmp.setText(weather.now.currentTemperature);
         condTxt.setText(weather.now.condTxt);
