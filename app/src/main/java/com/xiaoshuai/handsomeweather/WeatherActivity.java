@@ -1,6 +1,8 @@
 package com.xiaoshuai.handsomeweather;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -37,11 +40,14 @@ public class WeatherActivity extends AppCompatActivity {
 
     //下拉刷新
     public SwipeRefreshLayout swipeRefresh;
+    //滑动菜单布局
+    public DrawerLayout drawerLayout;
     //天气id
     private String currentWeatherId;
 
     private ImageView backgroundImage;
     private ScrollView weatherView;
+    private Button chooseAreaButton;
     private TextView cityName;
     private TextView updateTime;
     private TextView tmp;
@@ -85,8 +91,17 @@ public class WeatherActivity extends AppCompatActivity {
                 requestWeatherData(currentWeatherId);
             }
         });
+        drawerLayout = (DrawerLayout)findViewById(R.id.choose_area_layout);
         backgroundImage = (ImageView)findViewById(R.id.weather_background);
         weatherView = (ScrollView)findViewById(R.id.weather_data_view);
+        chooseAreaButton = (Button)findViewById(R.id.choose_area_button);
+        chooseAreaButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //打开drawerLayout中设置了layout_gravity="start"的view
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
         cityName = (TextView)findViewById(R.id.city_name);
         updateTime = (TextView)findViewById(R.id.update_date_text);
         tmp = (TextView)findViewById(R.id.tmp_text);
@@ -164,6 +179,8 @@ public class WeatherActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (weather!=null && "ok".equals(weather.status)) {
+                            //要保证下拉刷新的总是当前城市的天气信息，否则就会出现在滑动菜单中选择城市后，下拉刷新又变成上一个城市的天气信息
+                            currentWeatherId = weather.basic.weatherId;
                             /*将天气数据存储到缓存中*/
                             SharedPreferences.Editor editor = getSharedPreferences("weather_data",MODE_PRIVATE).edit();
                             String weatherData = new Gson().toJson(weather);

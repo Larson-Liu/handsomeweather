@@ -12,49 +12,63 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh"
+    <!--加入滑动菜单布局-->
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/choose_area_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ScrollView
-            android:id="@+id/weather_data_view"
+        <!--第一个控件内容是属于子界面中的内容-->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!--fitsSystemWindows为系统状态栏留出原有空间-->
-            <LinearLayout
+            <ScrollView
+                android:id="@+id/weather_data_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:fitsSystemWindows="true">
+                android:layout_height="match_parent">
 
-                <include layout="@layout/title" />
-                <include layout="@layout/now" />
-                <include layout="@layout/aqi" />
-                <include layout="@layout/forecast" />
-                <include layout="@layout/info" />
-                <include layout="@layout/suggestion" />
-                <RelativeLayout
-                    android:layout_width="wrap_content"
+                <!--fitsSystemWindows为系统状态栏留出原有空间-->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal">
+                    android:orientation="vertical"
+                    android:fitsSystemWindows="true">
 
-                    <TextView
-                        android:id="@+id/text_view"
+                    <include layout="@layout/title" />
+                    <include layout="@layout/now" />
+                    <include layout="@layout/aqi" />
+                    <include layout="@layout/forecast" />
+                    <include layout="@layout/info" />
+                    <include layout="@layout/suggestion" />
+                    <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="气象数据来自"
-                        android:textColor="#8FFF"
-                        android:layout_centerVertical="true" />
-                    <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/hefeng_logo"
-                        android:layout_toRightOf="@id/text_view"
-                        android:layout_centerVertical="true" />
-                </RelativeLayout>
-            </LinearLayout>
-        </ScrollView>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                        android:layout_gravity="center_horizontal">
+
+                        <TextView
+                            android:id="@+id/text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="气象数据来自"
+                            android:textColor="#8FFF"
+                            android:layout_centerVertical="true" />
+                        <ImageView
+                            android:layout_width="60dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/hefeng_logo"
+                            android:layout_toRightOf="@id/text_view"
+                            android:layout_centerVertical="true" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </ScrollView>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <!--第二个控件内容是属于滑动菜单里的内容-->
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="com.xiaoshuai.handsomeweather.fragment.ChooseAreaFragment"
+            android:layout_gravity="start" />
+    </androidx.drawerlayout.widget.DrawerLayout>
 </FrameLayout>

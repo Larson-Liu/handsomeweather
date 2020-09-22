@@ -16,8 +16,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 
+import com.xiaoshuai.handsomeweather.MainActivity;
 import com.xiaoshuai.handsomeweather.R;
 import com.xiaoshuai.handsomeweather.WeatherActivity;
 import com.xiaoshuai.handsomeweather.db.City;
@@ -110,10 +112,26 @@ public class ChooseAreaFragment extends Fragment {
                } else if (LEVEL_COUNTY==currentLevel) {
                    /*点击县进入对应城市天气界面，并传入天气id*/
                    String weatherId=counties.get(i).getWeatherId();
-                   Intent intent=new Intent(getContext(), WeatherActivity.class);
-                   intent.putExtra("weather_id",weatherId);
-                   startActivity(intent);
-                   getActivity().finish();
+                   if (getActivity() instanceof MainActivity) {
+                       /*如果选择地区的碎片在MainActivity中，即为程序最初启动后显示的城市选择菜单*/
+                       Intent intent=new Intent(getContext(), WeatherActivity.class);
+                       intent.putExtra("weather_id",weatherId);
+                       startActivity(intent);
+                       getActivity().finish();
+                   } else if (getActivity() instanceof WeatherActivity) {
+                       /*如果选择地区的碎片在WeatherActivity中，即为右滑显示城市选择菜单*/
+                       WeatherActivity weatherActivity = (WeatherActivity)getActivity();
+                       //调用public的drawerLayout关闭城市选择菜单
+                       weatherActivity.drawerLayout.closeDrawer(GravityCompat.START);
+                       //选择完成后重新回到省份选择界面
+                       currentLevel = LEVEL_PROVINCE;
+                       //查询省份数据并显示
+                       queryProvince();
+                       //调用public的swipeRefresh启动下拉刷新
+                       weatherActivity.swipeRefresh.setRefreshing(true);
+                       //调用public的请求数据方法从服务器中获取新选择城市的天气信息
+                       weatherActivity.requestWeatherData(weatherId);
+                   }
                }
             }
         });

@@ -4,6 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="?android:attr/actionBarSize">
 
+    <Button
+        android:id="@+id/choose_area_button"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:background="@drawable/choose_area_button"
+        android:layout_marginLeft="15dp"
+        android:layout_centerVertical="true" />
     <TextView
         android:id="@+id/city_name"
         android:layout_width="wrap_content"
