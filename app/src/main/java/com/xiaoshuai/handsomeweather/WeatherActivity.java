@@ -24,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.xiaoshuai.handsomeweather.gson.Forecast;
 import com.xiaoshuai.handsomeweather.gson.Weather;
+import com.xiaoshuai.handsomeweather.service.AutoUpdateService;
 import com.xiaoshuai.handsomeweather.util.JSONHandler;
 import com.xiaoshuai.handsomeweather.util.OkHttpUtil;
 
@@ -249,6 +250,9 @@ public class WeatherActivity extends AppCompatActivity {
         cw_text.setText(weather.suggestion.cw.txt);
         //显示天气界面
         weatherView.setVisibility(View.VISIBLE);
+        /*激活可长久在后台运行的定时任务服务*/
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
     /**
