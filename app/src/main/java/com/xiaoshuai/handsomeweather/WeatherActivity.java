@@ -1,10 +1,12 @@
 package com.xiaoshuai.handsomeweather;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -12,10 +14,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,11 +50,16 @@ public class WeatherActivity extends AppCompatActivity {
     public DrawerLayout drawerLayout;
     //天气id
     private String currentWeatherId;
+    //天气数据说明
+    private String msg;
+    //应用描述
+    private final String describe = "     这是一款基于 Android 端的天气预报软件，可以查看全国各省市县，查看全国各县天气情况，手动刷新天气数据，可以切换城市，具有后台定时刷新天气数据与背景图片服务。";
 
     private ImageView backgroundImage;
     private ScrollView weatherView;
     private Button chooseAreaButton;
     private TextView cityName;
+    private Button menuButton;
     private TextView updateTime;
     private TextView tmp;
     private TextView condTxt;
@@ -104,6 +114,47 @@ public class WeatherActivity extends AppCompatActivity {
             }
         });
         cityName = (TextView)findViewById(R.id.city_name);
+        menuButton = (Button)findViewById(R.id.menu_button);
+        //将普通按钮设置为弹出式菜单
+        final PopupMenu popupMenu = new PopupMenu(this,menuButton);
+        Menu menu = popupMenu.getMenu();
+        //弹出式菜单加载菜单项
+        getMenuInflater().inflate(R.menu.main,menu);
+        menuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //弹出菜单项
+                popupMenu.show();
+            }
+        });
+        //为菜单项设置点击监听器
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.about_me:
+                        /*设置弹出式对话框*/
+                        AlertDialog.Builder builder = new AlertDialog.Builder(WeatherActivity.this);
+                        builder.setTitle("说明：");
+                        builder.setCancelable(true);
+                        builder.setMessage(describe+msg);
+                        builder.setPositiveButton("知道啦", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        });
+                        builder.show();
+                        break;
+                    case R.id.set_item:
+                        Toast.makeText(WeatherActivity.this,"该功能暂不开放，请耐心等待哦",Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
         updateTime = (TextView)findViewById(R.id.update_date_text);
         tmp = (TextView)findViewById(R.id.tmp_text);
         condTxt = (TextView)findViewById(R.id.cond_txt);
@@ -204,6 +255,8 @@ public class WeatherActivity extends AppCompatActivity {
      * @param weather
      */
     private void showWeatherData(@NotNull Weather weather){
+        //显示说明信息
+        msg = weather.msg;
         //显示当前城市名
         cityName.setText(weather.basic.location);
         //显示数据更新时间

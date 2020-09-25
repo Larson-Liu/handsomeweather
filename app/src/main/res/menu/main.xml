@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--showAsAction="never"表示该项总是会以文字的形式显示在菜单按钮中-->
+    <item
+        android:id="@+id/about_me"
+        android:title="关于"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/set_item"
+        android:title="设置"
+        app:showAsAction="never" />
+</menu>
